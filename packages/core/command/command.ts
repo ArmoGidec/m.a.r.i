@@ -1,5 +1,5 @@
-import { Bot } from '../bot';
+import type { BotPosition } from '../bot';
 
 export interface Command {
-  move(bot: Bot): Bot;
+  move(bot: BotPosition): BotPosition;
 }

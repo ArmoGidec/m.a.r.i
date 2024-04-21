@@ -1,9 +1,7 @@
 import { Direction } from './direction';
+import type { Position } from './position';
 
-export interface Bot {
-  position: {
-    x: number,
-    y: number,
-  },
+export interface BotPosition {
+  position: Position,
   direction: Direction,
 }

@@ -1,0 +1,19 @@
+{
+  "map": [
+    ["outside", "outside", "outside", "outside", "clear"],
+    ["outside", "outside", "outside", "outside", "clear"],
+    ["outside", "outside", "outside", "outside", "clear"],
+    ["outside", "outside", "outside", "outside", "clear"],
+    ["outside", "outside", "outside", "outside", "clear"],
+    ["outside", "outside", "outside", "outside", "clear"],
+    ["outside", "outside", "exit", "clear", "clear"]
+  ],
+  "commands": ["step", "doubleStep", "turnRight"],
+  "startPosition": {
+    "direction": "down",
+    "position": {
+      "x": 5,
+      "y": 1
+    }
+  }
+}

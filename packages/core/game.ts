@@ -1,23 +1,31 @@
-import { Level } from './level';
-import { Bot } from './bot';
-import { Square } from './square';
-import { Command } from './command';
+import type { BotPosition } from './bot';
+import type { Command } from './command';
 import { CommandLine } from './commandLine';
-import { Validation } from './validation';
 import { OutsideMapError } from './error';
+import { Level } from './level';
+import { Square } from './square';
+import type{ Validation } from './validation';
 
 export class Game {
   private usedCommands = new WeakSet<Command>();
+  private readonly bot: BotPosition;
+  private readonly commandLine = new CommandLine();
   
   constructor(
     private readonly level: Level,
-    private readonly bot: Bot,
-    private readonly commandLine: CommandLine,
   ) {
+    this.bot = {
+      position: { ...level.startPosition.position },
+      direction: level.startPosition.direction,
+    };
   }
 
-  get possibleCommands() {
-    return this.level.getCommands().filter((command) => !this.usedCommands.has(command));
+  get data() {
+    return {
+      possibleCommands: this.level.commands.filter(
+        (command) => !this.usedCommands.has(command),
+      ),
+    };
   }
 
   pickCommand(command: Command, idx: number) {
@@ -40,7 +48,7 @@ export class Game {
     });
   }
 
-  private validate(bot: Bot): Validation {
+  private validate(bot: BotPosition): Validation {
     const { x, y } = bot.position;
     const square = this.level.getSquare(x, y);
     if (square === Square.Outside) {

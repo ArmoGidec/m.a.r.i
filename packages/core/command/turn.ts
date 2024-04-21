@@ -1,18 +1,18 @@
-import { Bot } from '../bot';
+import type { BotPosition } from '../bot';
 import { Direction } from '../direction';
-import { Command } from './command';
+import type { Command } from './command';
 
 type TurnChangesMap = {
   [P in Direction]: Direction;
 };
 
-class Turn implements Command {
-  protected turnChangesMap: TurnChangesMap;
+abstract class Turn implements Command {
+  protected abstract turnChangesMap: TurnChangesMap;
   
-  move(bot: Bot): Bot {
+  move(bot: BotPosition): BotPosition {
     return {
       ...bot,
-      direction: turnLeftChangesMap[bot.direction],
+      direction: this.turnChangesMap[bot.direction],
     };
   }
 }
@@ -38,8 +38,8 @@ export class TurnRight extends Turn implements Command {
   protected turnChangesMap = turnRightChangesMap;
 }
 
-class TurnSwitch extends Turn implements Command {
-  move(bot: Bot): Bot {
+abstract class TurnSwitch extends Turn implements Command {
+  move(bot: BotPosition): BotPosition {
     const nextBot = super.move(bot);
     this.switch();
     return nextBot;

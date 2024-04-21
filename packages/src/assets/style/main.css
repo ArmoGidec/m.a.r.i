@@ -1,0 +1,27 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+  height: 100dvh;
+  width: 100dvw;
+}
+
+#app {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--background-color);
+
+  --raisin-black: #201A23;
+  --magenta-haze: #9E4770;
+  --eminence: #631D76;
+  --magenta: #293332;
+  
+  --background-color: var(--raisin-black);
+}
