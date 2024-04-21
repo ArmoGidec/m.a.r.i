@@ -3,10 +3,11 @@
     v-loading
     class="app"
   >
-    <GameBoard 
-      v-if="level"
-      :level="level"
-    />
+    <template v-if="level">
+      <GameBoard :level="level" />
+
+      <BotIcon :bot="game!.bot" />
+    </template>
   </div>
 </template>
 
@@ -15,6 +16,7 @@ import { Game } from '@core';
 import { useAsyncState } from '@vueuse/core';
 import { computed, ref, watch } from 'vue';
 
+import { BotIcon } from './components/BotIcon';
 import { GameBoard } from './components/GameBoard';
 import { LevelsService } from './services';
 
@@ -44,5 +46,6 @@ watch(currentLevel, () => {
   background-color: #fff;
 
   --tile-size: 70px;
+  position: relative;
 }
 </style>

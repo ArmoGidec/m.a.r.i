@@ -8,7 +8,7 @@ import type{ Validation } from './validation';
 
 export class Game {
   private usedCommands = new WeakSet<Command>();
-  private readonly bot: BotPosition;
+  public readonly bot: BotPosition;
   private readonly commandLine = new CommandLine();
   
   constructor(
