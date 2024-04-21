@@ -3,21 +3,15 @@
 </template>
 
 <script setup lang="ts">
+import { getRotate } from '@app/shared';
 import { Direction } from '@core';
 import { computed } from 'vue';
-
-const DIRECTION_MAPPER: Record<Direction, number> = {
-  [Direction.Down]: 0,
-  [Direction.Left]: 90,
-  [Direction.Right]: -90,
-  [Direction.Up]: 180,
-};
 
 const props = defineProps<{
   direction: Direction,
 }>();
 
-const rotateValue = computed(() => `${DIRECTION_MAPPER[props.direction]}deg`);
+const rotateValue = computed(() => getRotate(props.direction));
 </script>
 
 <style lang="scss">
