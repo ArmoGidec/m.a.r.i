@@ -17,7 +17,7 @@ module.exports = {
     '@typescript-eslint/comma-dangle': ['error', 'always-multiline'],
     'eol-last': ['error', 'always'],
     quotes: ['error', 'single'],
-    'max-len': ['error', { code: 80 }],
+    'max-len': ['error', { code: 100 }],
     'simple-import-sort/imports': 'error',
     'simple-import-sort/exports': 'error',
     'quote-props': ['error', 'as-needed'],

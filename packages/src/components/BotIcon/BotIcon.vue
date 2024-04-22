@@ -39,8 +39,9 @@ const { rotation } = useRotate(() => props.bot.direction);
   transition: .3s;
 
   &__icon {
-    width: calc(var(--tile-size) / 4 * 3);
-    height: calc(var(--tile-size) / 4 * 3);
+    --size: calc(var(--tile-size) / 4 * 3);
+    width: var(--size);
+    height: var(--size);
   }
 }
 </style>

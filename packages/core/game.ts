@@ -7,8 +7,8 @@ import { Square } from './square';
 import type{ Validation } from './validation';
 
 export class Game {
-  private usedCommands = new WeakSet<Command>();
-  public readonly bot: BotPosition;
+  private usedCommands = new Set<Command>();
+  private readonly bot: BotPosition;
   private readonly commandLine = new CommandLine();
   
   constructor(
@@ -22,6 +22,8 @@ export class Game {
 
   get data() {
     return {
+      bot: this.bot,
+      usedCommands: [...this.usedCommands],
       possibleCommands: this.level.commands.filter(
         (command) => !this.usedCommands.has(command),
       ),
