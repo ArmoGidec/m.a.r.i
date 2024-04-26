@@ -1,7 +1,7 @@
 import type { BotPosition } from '../bot';
-import type { Command } from './command';
+import { Command } from './command';
 
-export class Stop implements Command {
+export class Stop extends Command {
   name = 'stop';
   
   move(): BotPosition {

@@ -5,7 +5,7 @@ import { computed } from 'vue';
 const DIRECTION_MAPPER = {
   [Direction.Down]: 0,
   [Direction.Left]: 90,
-  [Direction.Right]: -90,
+  [Direction.Right]: 270,
   [Direction.Up]: 180,
 } as const;
 

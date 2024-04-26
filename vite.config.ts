@@ -20,6 +20,7 @@ export default defineConfig({
     alias: {
       '@app': createAliasPath('./packages/src'),
       '@core': createAliasPath('./packages/core'),
+      '@shared': createAliasPath('./packages/shared'),
     },
   },
 });

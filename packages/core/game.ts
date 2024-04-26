@@ -6,27 +6,44 @@ import { Level } from './level';
 import { Square } from './square';
 import type{ Validation } from './validation';
 
+export interface GameOptions {
+  onUpdate?: () => void,
+  onError?: (err: Error, payload: any) => void,
+  onMove?: () => Promise<void> | void,
+}
+
 export class Game {
-  private usedCommands = new Set<Command>();
-  private readonly bot: BotPosition;
+  private usedCommands: Record<Command['id'], boolean> =  {};
+  private bot: BotPosition;
   private readonly commandLine = new CommandLine();
+  private readonly options: GameOptions = {};
   
   constructor(
     private readonly level: Level,
+    options?: GameOptions,
   ) {
     this.bot = {
       position: { ...level.startPosition.position },
       direction: level.startPosition.direction,
     };
+
+    this.options = { ...options };
   }
 
   get data() {
+    const possibleCommands = this.level.commands.filter(
+      (command) => !this.usedCommands[command.id],
+    );
+    
     return {
-      bot: this.bot,
-      usedCommands: [...this.usedCommands],
-      possibleCommands: this.level.commands.filter(
-        (command) => !this.usedCommands.has(command),
-      ),
+      bot: {
+        direction: this.bot.direction,
+        position: {
+          ...this.bot.position,
+        },
+      },
+      usedCommands: [...this.commandLine.commands],
+      possibleCommands,
     };
   }
 
@@ -36,31 +53,33 @@ export class Game {
   }
 
   run() {
-    this.commandLine.forEach((command, _, stop) => {
-      const nextBot = command.move(this.bot);
+    this.commandLine.forEach(async ({ value: command }, stop) => {
+      const nextBot = command.move(this.bot);      
       const [err] = this.validate(nextBot);
 
       if (err) {
         stop();
-        return;
+        this.options?.onError?.(err, nextBot);
       }
 
-      this.bot.direction = nextBot.direction;
-      this.bot.position = nextBot.position;
+      this.bot = nextBot;
+      await this.options.onMove?.();
     });
+
+    this.options.onUpdate?.();
   }
 
   private validate(bot: BotPosition): Validation {
     const { x, y } = bot.position;
     const square = this.level.getSquare(x, y);
     if (square === Square.Outside) {
-      return [new OutsideMapError(), null];
+      return [new OutsideMapError({ x, y }), null];
     }
     
     return [null, true];
   }
 
   private markCommand(command: Command) {
-    this.usedCommands.add(command);
+    this.usedCommands[command.id] = true;
   }
 }

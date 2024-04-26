@@ -1,6 +1,10 @@
 import type { BotPosition } from '../bot';
 
-export interface Command {
-  name: string;
-  move(bot: BotPosition): BotPosition;
+let _id = 1;
+const id = () => _id++;
+
+export abstract class Command {
+  id = id();
+  abstract name: string;
+  abstract move(bot: BotPosition): BotPosition;
 }

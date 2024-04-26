@@ -1,6 +1,6 @@
 <template>
   <div 
-    v-loading
+    v-loading="loading"
     class="app"
   >
     <template v-if="level && game">
@@ -8,46 +8,68 @@
       
       <hr class="app__delimiter" />
       
-      <CommandLine :commands="game.data.usedCommands" />
+      <CommandLine 
+        type="in"
+        :commands="usedCommands"
+        @insert="onInsert($event)"
+      />
 
       <hr class="app__delimiter" />
       
-      <CommandLine :commands="game.data.possibleCommands" />
+      <CommandLine
+        type="out"
+        :commands="possibleCommands"
+      />
       
-      <BotIcon :bot="game.data.bot" />
+      <BotIcon :bot="bot!" />
     </template>
   </div>
 </template>
 
 <script setup lang="ts">
-import { Game } from '@core';
-import { useAsyncState } from '@vueuse/core';
-import { computed, ref, watch } from 'vue';
+import { ref, toRaw, toRefs, watch } from 'vue';
 
 import { BotIcon } from './components/BotIcon';
-import { CommandLine } from './components/CommandLine';
+import { CommandLine, type DragPayload } from './components/CommandLine';
 import { GameBoard } from './components/GameBoard';
 import { LevelsService } from './services';
+import { useGameStore } from './shared/gameStore';
 
 const currentLevel = ref(8);
+const gameStore = useGameStore();
+const loading = ref(false);
 
-const levelState = useAsyncState(
-  () => LevelsService.getLevel(currentLevel.value),
-  null,
-);
-
-const level = computed(() => levelState.state.value);
-const game = computed(() => {
-  if (!level.value) {
-    return null;
+const fetchLevel = async () => {
+  loading.value = true;
+  try {
+    const level = await LevelsService.getLevel(currentLevel.value);
+    gameStore.setLevel(level);
+  } finally {
+    loading.value = false;
   }
-  
-  return new Game(level.value);
-});
+};
+
+const onInsert = (payload: DragPayload) => {
+  const game = toRaw(gameStore.state.game!);
+  const command = toRaw(game.data.possibleCommands[payload.oldIndex]);
+
+  game.pickCommand(command, payload.newIndex);
+  game.run();
+};
 
 watch(currentLevel, () => {
-  levelState.execute();
+  fetchLevel();
+}, {
+  immediate: true,
 });
+
+const { 
+  bot,
+  game,
+  level,
+  possibleCommands,
+  usedCommands,
+} = toRefs(gameStore.state);
 </script>
 
 <style lang="scss">
