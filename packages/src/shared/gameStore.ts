@@ -48,7 +48,7 @@ export const useGameStore = () => ({
   setLevel,
 });
 
-const handleError = (err: Error) => {
+const handleError = (err: Error, bot: BotPosition) => {
   state.error = err;
   throw err;
 };

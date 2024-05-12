@@ -11,7 +11,9 @@ import { useRotate } from '@app/shared';
 import type { BotIconProps } from './types';
 
 const props = defineProps<BotIconProps>();
-const { rotation } = useRotate(() => props.bot.direction);
+const { rotation } = useRotate(() => {
+  return props.bot.direction;
+});
 </script>
 
 <style lang="scss">

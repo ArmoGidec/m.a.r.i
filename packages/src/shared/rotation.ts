@@ -16,7 +16,13 @@ export const getRotationValue = (direction: Direction): RotationValue => DIRECTI
 export const useRotate = (source: MaybeRefOrGetter<Direction>) => {
   const directionInfo = computed<[Direction | undefined, Direction]>((oldValue) => {
     const oldDirection = oldValue?.[1];
-    return [oldDirection, toValue(source)] as const;
+    const currentDirection = toValue(source);
+
+    if (oldDirection === currentDirection) {
+      return oldValue!;
+    }
+    
+    return [oldDirection, currentDirection] as const;
   });
   
   const rotationValue = computed<number>((oldValue = 0) => {

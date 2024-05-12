@@ -8,7 +8,7 @@ import type{ Validation } from './validation';
 
 export interface GameOptions {
   onUpdate?: () => void,
-  onError?: (err: Error, payload: any) => void,
+  onError?: (err: Error, bot: BotPosition) => void,
   onMove?: () => Promise<void> | void,
 }
 
@@ -73,7 +73,7 @@ export class Game {
     const { x, y } = bot.position;
     const square = this.level.getSquare(x, y);
     if (square === Square.Outside) {
-      return [new OutsideMapError({ x, y }), null];
+      return [new OutsideMapError(bot), null];
     }
     
     return [null, true];
