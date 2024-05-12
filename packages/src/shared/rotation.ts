@@ -1,4 +1,4 @@
-import { Direction } from '@core';
+import { Direction, Turn } from '@core';
 import { type MaybeRefOrGetter,toValue } from '@vueuse/core';
 import { computed } from 'vue';
 
@@ -11,9 +11,25 @@ const DIRECTION_MAPPER = {
 
 type RotationValue = typeof DIRECTION_MAPPER[keyof typeof DIRECTION_MAPPER];
 
-export const getRotate = (direction: Direction): `${RotationValue}deg` =>
-  `${DIRECTION_MAPPER[direction]}deg`;
+export const getRotationValue = (direction: Direction): RotationValue => DIRECTION_MAPPER[direction];
 
-export const useRotate = (source: MaybeRefOrGetter<Direction>) => ({
-  rotation: computed(() => getRotate(toValue(source))),
-});
+export const useRotate = (source: MaybeRefOrGetter<Direction>) => {
+  const directionInfo = computed<[Direction | undefined, Direction]>((oldValue) => {
+    const oldDirection = oldValue?.[1];
+    return [oldDirection, toValue(source)] as const;
+  });
+  
+  const rotationValue = computed<number>((oldValue = 0) => {
+    const [oldDirection, currentDirection] = toValue(directionInfo);
+    if (!oldDirection) {
+      return getRotationValue(currentDirection);
+    }
+
+    const diff = Turn.isTurnLeft(oldDirection, currentDirection) ? -90 : 90;
+    return oldValue + diff;
+  });
+  
+  return {
+    rotation: computed(() => `${rotationValue.value}deg`),
+  };
+};
