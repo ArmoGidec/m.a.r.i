@@ -24,6 +24,10 @@ const setLevel = (level: Level) => {
   state.level = level;
 };
 
+const reset = () => {
+  updateGame();
+};
+
 const updateGame = () => {
   if (!state.level) {
     return;
@@ -36,7 +40,7 @@ const updateGame = () => {
     onMove: updateGameData,
   });
 
-  updateGameData();
+  return updateGameData();
 };
 
 watch(() => state.level, () => {
@@ -46,9 +50,11 @@ watch(() => state.level, () => {
 export const useGameStore = () => ({
   state: readonly(state) as Readonly<GameState>,
   setLevel,
+  reset,
 });
 
 const handleError = (err: Error, bot: BotPosition) => {
+  updateGameData();
   state.error = err;
   throw err;
 };
