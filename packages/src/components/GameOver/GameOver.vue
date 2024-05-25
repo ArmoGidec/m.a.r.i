@@ -7,24 +7,21 @@
         {{ message }}
       </span>
       
-      <button 
-        class="game-over__reset"
-        @click="reset()"
-      >
-        Reset
-      </button>
+      <ResetButton @reset="onReset()" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { ResetButton } from '@app/components/ResetButton';
+
 import type { GameOverEmits, GameOverProps } from './types';
 
 defineProps<GameOverProps>();
 
 const emit = defineEmits<GameOverEmits>();
 
-const reset = () => {
+const onReset = () => {
   emit('reset');
 };
 </script>
@@ -58,14 +55,6 @@ const reset = () => {
   &__title {
     font-weight: bold;
     font-size: 22px;
-  }
-
-  &__reset {
-    border: none;
-    padding: 12px;
-    border-radius: 8px;
-    background-color: #154d88;
-    color: white;
   }
 }
 </style>

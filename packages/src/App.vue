@@ -27,6 +27,11 @@
       <BotIcon :bot="bot!" />
     </template>
 
+    <ResetButton 
+      class="app__reset-btn"
+      @reset="onReset()"
+    />
+    
     <GameOver
       v-if="error"
       message="The bot is outside!"
@@ -41,9 +46,10 @@ import { nextTick, ref, toRaw, toRefs, watch } from 'vue';
 import { BotIcon } from './components/BotIcon';
 import { CommandLine, type DragPayload } from './components/CommandLine';
 import { GameBoard } from './components/GameBoard';
+import { GameOver } from './components/GameOver';
+import { ResetButton } from './components/ResetButton';
 import { LevelsService } from './services';
 import { useGameStore } from './shared/gameStore';
-import { GameOver } from './components/GameOver';
 
 const currentLevel = ref(8);
 const gameStore = useGameStore();
@@ -105,6 +111,12 @@ const {
 
   &__delimiter {
     margin: 0;
+  }
+
+  &__reset-btn {
+    position: absolute;
+    right: 0;
+    top: 0;
   }
 }
 </style>
