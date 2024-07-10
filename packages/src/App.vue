@@ -2,6 +2,9 @@
   <div 
     v-loading="loading"
     class="app"
+    :class="{
+      'app--with-animations': withAnimations,
+    }"
   >
     <template v-if="level && game">
       <GameBoard :level="level" />
@@ -23,29 +26,45 @@
       
       <BotIcon :bot="bot!" />
     </template>
+
+    <ResetButton 
+      class="app__reset-btn"
+      @reset="onReset()"
+    />
+    
+    <GameOver
+      v-if="error"
+      message="The bot is outside!"
+      @reset="onReset()"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, toRaw, toRefs, watch } from 'vue';
+import { nextTick, ref, toRaw, toRefs, watch } from 'vue';
 
 import { BotIcon } from './components/BotIcon';
 import { CommandLine, type DragPayload } from './components/CommandLine';
 import { GameBoard } from './components/GameBoard';
+import { GameOver } from './components/GameOver';
+import { ResetButton } from './components/ResetButton';
 import { LevelsService } from './services';
 import { useGameStore } from './shared/gameStore';
 
 const currentLevel = ref(8);
 const gameStore = useGameStore();
 const loading = ref(false);
+const withAnimations = ref(true);
 
 const fetchLevel = async () => {
+  withAnimations.value = false;
   loading.value = true;
   try {
     const level = await LevelsService.getLevel(currentLevel.value);
     gameStore.setLevel(level);
   } finally {
     loading.value = false;
+    withAnimations.value = true;
   }
 };
 
@@ -55,6 +74,15 @@ const onInsert = (payload: DragPayload) => {
 
   game.pickCommand(command, payload.newIndex);
   game.run();
+};
+
+const onReset = () => {
+  withAnimations.value = false;
+  gameStore.reset();
+
+  nextTick(() => {
+    withAnimations.value = true;
+  });
 };
 
 watch(currentLevel, () => {
@@ -69,18 +97,26 @@ const {
   level,
   possibleCommands,
   usedCommands,
+  error,
 } = toRefs(gameStore.state);
 </script>
 
 <style lang="scss">
 .app {
   background-color: #fff;
+  font-family: Arial, Helvetica, sans-serif;
 
   --tile-size: 70px;
   position: relative;
 
   &__delimiter {
     margin: 0;
+  }
+
+  &__reset-btn {
+    position: absolute;
+    right: 0;
+    top: 0;
   }
 }
 </style>

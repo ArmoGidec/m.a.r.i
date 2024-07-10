@@ -4,7 +4,7 @@ import { Command } from './command';
 
 type TurnChangesMap = Record<Direction, Direction>;
 
-abstract class Turn extends Command {
+export abstract class Turn extends Command {
   abstract name: string;
 
   protected abstract turnChangesMap: TurnChangesMap;
@@ -14,6 +14,14 @@ abstract class Turn extends Command {
       ...bot,
       direction: this.turnChangesMap[bot.direction],
     };
+  }
+
+  static isTurnLeft(oldDirection: Direction, newDirection: Direction): boolean {
+    return turnLeftChangesMap[oldDirection] === newDirection;
+  }
+
+  static isTurnRight(oldDirection: Direction, newDirection: Direction): boolean {
+    return !this.isTurnLeft(oldDirection, newDirection);
   }
 }
 

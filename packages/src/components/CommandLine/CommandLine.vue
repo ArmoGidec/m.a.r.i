@@ -1,17 +1,11 @@
 <template>
-  <div
-    class="command-line"
-    :class="{
-      'command-line--in': type === 'in',
-      'command-line--out': type === 'out',
-      'command-line--dragging': draggableState.isDragging,
-    }"
-  >
-    <div 
-      ref="draggableContainerRef"
-      class="command-line__draggable-container"
-    >
-      <CommandCard
+  <div class="command-line" :class="{
+    'command-line--in': type === 'in',
+    'command-line--out': type === 'out',
+    'command-line--dragging': draggableState.isDragging,
+  }">
+    <div ref="draggableContainerRef" class="command-line__draggable-container">
+      <CommandCard 
         v-for="(command, idx) in commands"
         :key="`${command.name}_${idx}`"
         :command="command"
@@ -24,7 +18,14 @@
 <script lang="ts" setup>
 import { useDraggableStore } from '@app/shared/draggableStore';
 import Sortable from 'sortablejs';
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
+import {
+  computed,
+  getCurrentInstance,
+  onBeforeUnmount,
+  onMounted,
+  ref,
+  watch,
+} from 'vue';
 
 import { CommandCard } from '../CommandCard';
 import type { CommandLineEmits, CommandLineProps } from './types';
@@ -38,11 +39,13 @@ const { state: draggableState, startDragging, stopDragging } = useDraggableStore
 const draggableContainerRef = ref<HTMLDivElement>();
 let sortable: Sortable | null = null;
 
+const instance = getCurrentInstance();
+
 const initSortable = () => {
   if (!draggableContainerRef.value) {
     return;
   }
-  
+
   if (sortable) {
     disposeSortable();
   }
@@ -106,11 +109,11 @@ onBeforeUnmount(() => {
     display: none;
   }
 
-  
+
   &:is(&--in) &__command-card--drag {
     opacity: 0.4;
   }
-  
+
   &--dragging:is(&--in) &__draggable-container {
     background-color: rgba(255, 255, 255, 0.5);
   }

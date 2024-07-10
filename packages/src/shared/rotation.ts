@@ -1,4 +1,4 @@
-import { Direction } from '@core';
+import { Direction, Turn } from '@core';
 import { type MaybeRefOrGetter,toValue } from '@vueuse/core';
 import { readonly, ref, watch } from 'vue';
 
