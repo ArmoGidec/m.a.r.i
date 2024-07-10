@@ -40,12 +40,14 @@ const { rotation } = useRotate(() => props.bot.direction);
   top: var(--y-position, 0);
   left: var(--x-position, 0);
 
-  transition: .3s;
-
   &__icon {
     --size: calc(var(--tile-size) / 4 * 3);
     width: var(--size);
     height: var(--size);
   }
+}
+
+.app--with-animations .bot-icon {
+  transition: .3s;
 }
 </style>

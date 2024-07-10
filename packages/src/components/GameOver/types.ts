@@ -1,5 +1,5 @@
 export type GameOverProps = {
-  message: string,
+  error: Error,
 };
 
 export interface GameOverEmits {

@@ -34,13 +34,14 @@
     
     <GameOver
       v-if="error"
-      message="The bot is outside!"
+      :error="error"
       @reset="onReset()"
     />
   </div>
 </template>
 
 <script setup lang="ts">
+import { promiseTimeout } from '@vueuse/core';
 import { nextTick, ref, toRaw, toRefs, watch } from 'vue';
 
 import { BotIcon } from './components/BotIcon';
@@ -58,9 +59,11 @@ const withAnimations = ref(true);
 
 const disableAnimations = () => {
   withAnimations.value = false;
+  return;
 };
 
-const enableAnimations = () => {
+const enableAnimations = async () => {
+  await promiseTimeout(300);
   withAnimations.value = true;
 };
 
@@ -68,6 +71,7 @@ const fetchLevel = async () => {
   disableAnimations();
 
   loading.value = true;
+
   try {
     const level = await LevelsService.getLevel(currentLevel.value);
     gameStore.setLevel(level);
@@ -85,10 +89,9 @@ const onInsert = (payload: DragPayload) => {
   game.run();
 };
 
-const onReset = () => {
-  disableAnimations();
-
+const onReset = async () => {
   gameStore.reset();
+  await disableAnimations();
 
   nextTick(enableAnimations);
 };

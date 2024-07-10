@@ -4,7 +4,7 @@
       <span class="game-over__title">Game Over!</span>
 
       <span class="game-over__msg">
-        {{ message }}
+        {{ errorMessage }}
       </span>
       
       <ResetButton @reset="onReset()" />
@@ -14,12 +14,16 @@
 
 <script setup lang="ts">
 import { ResetButton } from '@app/components/ResetButton';
+import { computed } from 'vue';
 
+import { parseError } from './parseError';
 import type { GameOverEmits, GameOverProps } from './types';
 
-defineProps<GameOverProps>();
+const props = defineProps<GameOverProps>();
 
 const emit = defineEmits<GameOverEmits>();
+
+const errorMessage = computed(() => parseError(props.error));
 
 const onReset = () => {
   emit('reset');
