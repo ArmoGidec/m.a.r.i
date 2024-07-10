@@ -7,7 +7,7 @@ import WaitIcon from '@app/assets/images/command-icons/wait-icon.svg?component';
 import { type Command, Commands } from '@core';
 import { type Component, computed, type MaybeRefOrGetter,toValue } from 'vue';
 
-type CommandNames = Uncapitalize<keyof typeof Commands>;
+type CommandNames = Exclude<Uncapitalize<keyof typeof Commands>, 'command'>;
 
 const NullComponent = { render: () => null };
 

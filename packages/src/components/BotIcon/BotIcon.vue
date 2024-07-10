@@ -7,10 +7,14 @@
 <script setup lang="ts">
 import RobotIcon from '@app/assets/images/robot-icon.svg?component';
 import { useRotate } from '@app/shared';
+import { computed } from 'vue';
 
 import type { BotIconProps } from './types';
 
 const props = defineProps<BotIconProps>();
+
+const position = computed(() => props.bot.position);
+
 const { rotation } = useRotate(() => props.bot.direction);
 </script>
 
@@ -24,14 +28,14 @@ const { rotation } = useRotate(() => props.bot.direction);
   justify-content: center;
   align-items: center;
 
-  rotate: v-bind(rotation);
+  rotate: calc(v-bind(rotation) * 1deg);
 
   position: absolute;
   --x-position: calc(
-    var(--tile-size) * max(0, (v-bind('props.bot.position.x') - 1))
+    var(--tile-size) * max(0, (v-bind('position.x') - 1))
   );
   --y-position: calc(
-    var(--tile-size) * max(0, v-bind('props.bot.position.y') - 1)
+    var(--tile-size) * max(0, v-bind('position.y') - 1)
   );
   top: var(--y-position, 0);
   left: var(--x-position, 0);

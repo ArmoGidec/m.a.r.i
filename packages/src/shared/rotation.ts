@@ -1,6 +1,6 @@
 import { Direction } from '@core';
 import { type MaybeRefOrGetter,toValue } from '@vueuse/core';
-import { computed } from 'vue';
+import { readonly, ref, watch } from 'vue';
 
 const DIRECTION_MAPPER = {
   [Direction.Down]: 0,
@@ -11,9 +11,22 @@ const DIRECTION_MAPPER = {
 
 type RotationValue = typeof DIRECTION_MAPPER[keyof typeof DIRECTION_MAPPER];
 
-export const getRotate = (direction: Direction): `${RotationValue}deg` =>
-  `${DIRECTION_MAPPER[direction]}deg`;
+export const getRotate = (direction: Direction): RotationValue => DIRECTION_MAPPER[direction];
 
-export const useRotate = (source: MaybeRefOrGetter<Direction>) => ({
-  rotation: computed(() => getRotate(toValue(source))),
-});
+export const useRotate = (source: MaybeRefOrGetter<Direction>) => {
+  const rotation = ref(getRotate(toValue(source)));
+  
+  watch(() => toValue(source), (curDir, prevDir) => {
+    let diff = getRotate(curDir) - getRotate(prevDir);    
+
+    if (Math.abs(diff) > 90) {
+      diff += Math.sign(-diff) * 360;
+    }
+    
+    rotation.value += diff;
+  });
+  
+  return {
+    rotation: readonly(rotation),
+  };
+};

@@ -2,9 +2,7 @@ import type { BotPosition } from '../bot';
 import { Direction } from '../direction';
 import { Command } from './command';
 
-type TurnChangesMap = {
-  [P in Direction]: Direction;
-};
+type TurnChangesMap = Record<Direction, Direction>;
 
 abstract class Turn extends Command {
   abstract name: string;

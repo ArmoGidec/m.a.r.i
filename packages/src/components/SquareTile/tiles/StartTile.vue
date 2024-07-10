@@ -16,6 +16,6 @@ const { rotation } = useRotate(() => props.direction);
 <style lang="scss">
 .start-tile {
   background-image: url('@app/assets/images/start-tile-img.png');
-  transform: rotate(v-bind(rotation));
+  transform: rotate(calc(v-bind(rotation) * 1deg));
 }
 </style>
