@@ -56,6 +56,7 @@ export const useGameStore = () => ({
 const handleError = (err: Error, bot: BotPosition) => {
   updateGameData();
   state.error = err;
+  state.bot = bot;
   throw err;
 };
 

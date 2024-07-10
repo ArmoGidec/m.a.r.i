@@ -56,15 +56,24 @@ const gameStore = useGameStore();
 const loading = ref(false);
 const withAnimations = ref(true);
 
-const fetchLevel = async () => {
+const disableAnimations = () => {
   withAnimations.value = false;
+};
+
+const enableAnimations = () => {
+  withAnimations.value = true;
+};
+
+const fetchLevel = async () => {
+  disableAnimations();
+
   loading.value = true;
   try {
     const level = await LevelsService.getLevel(currentLevel.value);
     gameStore.setLevel(level);
   } finally {
     loading.value = false;
-    withAnimations.value = true;
+    nextTick(enableAnimations);
   }
 };
 
@@ -77,12 +86,11 @@ const onInsert = (payload: DragPayload) => {
 };
 
 const onReset = () => {
-  withAnimations.value = false;
+  disableAnimations();
+
   gameStore.reset();
 
-  nextTick(() => {
-    withAnimations.value = true;
-  });
+  nextTick(enableAnimations);
 };
 
 watch(currentLevel, () => {
