@@ -1,17 +1,16 @@
+import type { BotPosition } from './bot';
+import type { Command } from './command';
 import { Square } from './square';
-import { Command } from './command';
 
 export class Level {
   constructor(
-    private readonly map: Square[][],
-    private readonly commands: Command[],
+    public readonly id: number,
+    public readonly map: Square[][],
+    public readonly commands: Command[],
+    public readonly startPosition: BotPosition,
   ) {}
 
-  getCommands() {
-    return this.commands;
-  }
-
   getSquare(x: number, y: number) {
-    return this.map[y][x];
+    return this.map[y - 1][x - 1];
   }
 }

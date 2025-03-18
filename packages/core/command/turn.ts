@@ -1,19 +1,27 @@
-import { Bot } from '../bot';
+import type { BotPosition } from '../bot';
 import { Direction } from '../direction';
 import { Command } from './command';
 
-type TurnChangesMap = {
-  [P in Direction]: Direction;
-};
+type TurnChangesMap = Record<Direction, Direction>;
 
-class Turn implements Command {
-  protected turnChangesMap: TurnChangesMap;
+export abstract class Turn extends Command {
+  abstract name: string;
+
+  protected abstract turnChangesMap: TurnChangesMap;
   
-  move(bot: Bot): Bot {
+  move(bot: BotPosition): BotPosition {
     return {
       ...bot,
-      direction: turnLeftChangesMap[bot.direction],
+      direction: this.turnChangesMap[bot.direction],
     };
+  }
+
+  static isTurnLeft(oldDirection: Direction, newDirection: Direction): boolean {
+    return turnLeftChangesMap[oldDirection] === newDirection;
+  }
+
+  static isTurnRight(oldDirection: Direction, newDirection: Direction): boolean {
+    return !this.isTurnLeft(oldDirection, newDirection);
   }
 }
 
@@ -23,7 +31,9 @@ const turnLeftChangesMap: TurnChangesMap = {
   [Direction.Down]: Direction.Right,
   [Direction.Left]: Direction.Down,
 };
-export class TurnLeft extends Turn implements Command {
+export class TurnLeft extends Turn {
+  name = 'turnLeft';
+  
   protected turnChangesMap = turnLeftChangesMap;
 }
 
@@ -34,12 +44,14 @@ const turnRightChangesMap: TurnChangesMap = {
   [Direction.Left]: Direction.Up,
 };
 
-export class TurnRight extends Turn implements Command {
+export class TurnRight extends Turn {
+  name = 'turnRight';
+
   protected turnChangesMap = turnRightChangesMap;
 }
 
-class TurnSwitch extends Turn implements Command {
-  move(bot: Bot): Bot {
+abstract class TurnSwitch extends Turn {
+  move(bot: BotPosition): BotPosition {
     const nextBot = super.move(bot);
     this.switch();
     return nextBot;
@@ -55,10 +67,14 @@ class TurnSwitch extends Turn implements Command {
   }
 }
 
-export class TurnLeftSwitch extends TurnSwitch implements Command {
+export class TurnLeftSwitch extends TurnSwitch {
+  name = 'turnLeftSwitch';
+
   protected turnChangesMap = turnLeftChangesMap;
 }
 
-export class TurnRightSwitch extends TurnSwitch implements Command {
+export class TurnRightSwitch extends TurnSwitch {
+  name = 'turnRightSwitch';
+
   protected turnChangesMap = turnRightChangesMap;
 }

@@ -1,6 +1,12 @@
+import type { BotPosition } from '../bot';
 import { Command } from './command';
 
-export class Wait implements Command {
-  move(): void {
+export class Wait extends Command {
+  name = 'wait';
+  
+  move(bot: BotPosition): BotPosition {
+    return {
+      ...bot,
+    };
   }
 }
