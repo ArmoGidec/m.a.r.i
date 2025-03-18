@@ -16,15 +16,13 @@
 </template>
 
 <script lang="ts" setup>
-import { useDraggableStore } from '@app/shared/draggableStore';
+import { useDraggableStore } from '@app/shared';
 import Sortable from 'sortablejs';
 import {
   computed,
-  getCurrentInstance,
   onBeforeUnmount,
   onMounted,
   ref,
-  watch,
 } from 'vue';
 
 import { CommandCard } from '../CommandCard';
@@ -38,8 +36,6 @@ const isInType = computed(() => props.type === 'in');
 const { state: draggableState, startDragging, stopDragging } = useDraggableStore();
 const draggableContainerRef = ref<HTMLDivElement>();
 let sortable: Sortable | null = null;
-
-const instance = getCurrentInstance();
 
 const initSortable = () => {
   if (!draggableContainerRef.value) {

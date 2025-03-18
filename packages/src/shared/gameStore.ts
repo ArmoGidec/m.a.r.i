@@ -1,4 +1,4 @@
-import { type BotPosition, type Command, Game, type Level } from '@core';
+import { type BotPosition, type Command, Game, type Level, type Position } from '@core';
 import { promiseTimeout } from '@vueuse/core';
 import { reactive, readonly, watch } from 'vue';
 
@@ -8,7 +8,10 @@ export interface GameState {
   bot: BotPosition | null,
   possibleCommands: Command[],
   usedCommands: Command[],
-  error: Error | null,
+  error: {
+    payload: Error,
+    show: boolean,
+  } | null,
 }
 
 const state = reactive<GameState>({
@@ -28,6 +31,14 @@ const reset = () => {
   updateGame();
 };
 
+const checkError = () => {
+  setTimeout(() => {
+    if (state.error) {
+      state.error.show = true;
+    }
+  }, 600);
+};
+
 const updateGame = () => {
   if (!state.level) {
     return;
@@ -38,6 +49,7 @@ const updateGame = () => {
   state.game = new Game(state.level, {
     onError: handleError,
     onMove: updateGameData,
+    onUpdate: checkError,
   });
 
   return updateGameData();
@@ -47,16 +59,25 @@ watch(() => state.level, () => {
   updateGame();
 });
 
+const getSquare = (position: Position) => state.level?.getSquare(
+  position.x,
+  position.y,
+);
+
 export const useGameStore = () => ({
   state: readonly(state) as Readonly<GameState>,
   setLevel,
   reset,
+  getSquare,
 });
 
 const handleError = (err: Error, bot: BotPosition) => {
   updateGameData();
-  state.error = err;
   state.bot = bot;
+  state.error = {
+    payload: err,
+    show: false,
+  };
   throw err;
 };
 
@@ -66,5 +87,5 @@ const updateGameData = () => {
   state.bot = gameData.bot;
   state.possibleCommands = gameData.possibleCommands;
   state.usedCommands = gameData.usedCommands;
-  return promiseTimeout(500);
+  return promiseTimeout(300);
 };

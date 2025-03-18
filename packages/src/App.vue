@@ -33,8 +33,8 @@
     />
     
     <GameOver
-      v-if="error"
-      :error="error"
+      v-if="error?.show"
+      :error="error.payload"
       @reset="onReset()"
     />
   </div>
@@ -50,7 +50,7 @@ import { GameBoard } from './components/GameBoard';
 import { GameOver } from './components/GameOver';
 import { ResetButton } from './components/ResetButton';
 import { LevelsService } from './services';
-import { useGameStore } from './shared/gameStore';
+import { useGameStore } from './shared';
 
 const currentLevel = ref(8);
 const gameStore = useGameStore();
@@ -89,9 +89,9 @@ const onInsert = (payload: DragPayload) => {
   game.run();
 };
 
-const onReset = async () => {
+const onReset = () => {
   gameStore.reset();
-  await disableAnimations();
+  disableAnimations();
 
   nextTick(enableAnimations);
 };

@@ -64,9 +64,9 @@ export class Game {
 
       this.bot = nextBot;
       await this.options.onMove?.();
+    }).finally(() => {
+      this.options.onUpdate?.();
     });
-
-    this.options.onUpdate?.();
   }
 
   private validate(bot: BotPosition): Validation {
