@@ -7,26 +7,28 @@ export class CommandLine {
     this.commands.splice(idx, 0, command);
   }
 
-  async forEach(
+  private _isStoped = false;
+  get isStoped() {
+    return this._isStoped;
+  }
+
+  stop() {
+    this._isStoped = true;
+  }
+
+  async run(
     fn: (
-      payload: { value: Command, index: number },
-      stop: () => void,
+      command: Command,
+      index: number,
     ) => Promise<void> | void,
   ) {
-    let isStoped = false;
+    this._isStoped = false;
 
-    const stop = () => {
-      isStoped = true;
-    };
-    
     for (let idx = 0, len = this.commands.length; idx < len; idx++) {
       const command = this.commands[idx];
-      await fn({
-        value: command,
-        index: idx,
-      }, stop);
+      await fn(command, idx);
 
-      if (isStoped) {
+      if (this._isStoped) {
         return;
       }
     }

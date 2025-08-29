@@ -4,7 +4,7 @@ import { CommandLine } from './commandLine';
 import { OutsideMapError } from './error';
 import { Level } from './level';
 import { Square } from './square';
-import type{ Validation } from './validation';
+import type { Validation } from './validation';
 
 export interface GameOptions {
   onUpdate?: () => void,
@@ -13,11 +13,12 @@ export interface GameOptions {
 }
 
 export class Game {
-  private usedCommands: Record<Command['id'], boolean> =  {};
+  private usedCommands: Record<Command['id'], boolean> = {};
   private bot: BotPosition;
   private readonly commandLine = new CommandLine();
   private readonly options: GameOptions = {};
-  
+  private possibleCommands: Command[] = [];
+
   constructor(
     private readonly level: Level,
     options?: GameOptions,
@@ -26,15 +27,12 @@ export class Game {
       position: { ...level.startPosition.position },
       direction: level.startPosition.direction,
     };
+    this.possibleCommands = [...this.level.commands];
 
     this.options = { ...options };
   }
 
   get data() {
-    const possibleCommands = this.level.commands.filter(
-      (command) => !this.usedCommands[command.id],
-    );
-    
     return {
       bot: {
         direction: this.bot.direction,
@@ -43,27 +41,35 @@ export class Game {
         },
       },
       usedCommands: [...this.commandLine.commands],
-      possibleCommands,
+      possibleCommands: [...this.possibleCommands],
     };
   }
 
   pickCommand(command: Command, idx: number) {
     this.commandLine.insertCommand(command, idx);
+
     this.markCommand(command);
+
+    this.possibleCommands = this.level.commands.filter(
+      (command) => !this.usedCommands[command.id],
+    );
   }
 
   run() {
-    this.commandLine.forEach(async ({ value: command }, stop) => {
-      const nextBot = command.move(this.bot);      
-      const [err] = this.validate(nextBot);
+    let repeat = false;
 
-      if (err) {
-        stop();
-        this.options?.onError?.(err, nextBot);
+    this.commandLine.run(async (command) => {
+      if (command.name === 'repeat') {
+        repeat = true;
+        return;
       }
 
-      this.bot = nextBot;
-      await this.options.onMove?.();
+      await this.exec(command);
+
+      if (repeat && !this.commandLine.isStoped) {
+        await this.exec(command);
+        repeat = false;
+      }
     }).finally(() => {
       this.options.onUpdate?.();
     });
@@ -75,11 +81,24 @@ export class Game {
     if (square === Square.Outside) {
       return [new OutsideMapError(bot), null];
     }
-    
+
     return [null, true];
   }
 
   private markCommand(command: Command) {
     this.usedCommands[command.id] = true;
+  }
+
+  private async exec(command: Command) {
+    const nextBot = command.move(this.bot);
+    const [err] = this.validate(nextBot);
+
+    if (err) {
+      this.commandLine.stop();
+      this.options?.onError?.(err, nextBot);
+    }
+
+    this.bot = nextBot;
+    await this.options.onMove?.();
   }
 }
