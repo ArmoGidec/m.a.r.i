@@ -4,7 +4,7 @@ import { Command } from './command';
 export class Repeat extends Command {
   name = 'repeat';
   
-  move(bot: BotPosition): BotPosition {
+  exec(bot: BotPosition): BotPosition {
     return { ...bot };
   }
 }

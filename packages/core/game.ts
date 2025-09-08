@@ -90,7 +90,7 @@ export class Game {
   }
 
   private async exec(command: Command) {
-    const nextBot = command.move(this.bot);
+    const nextBot = command.exec(this.bot);
     const [err] = this.validate(nextBot);
 
     if (err) {

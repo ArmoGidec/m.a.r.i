@@ -9,7 +9,7 @@ export abstract class Turn extends Command {
 
   protected abstract turnChangesMap: TurnChangesMap;
   
-  move(bot: BotPosition): BotPosition {
+  exec(bot: BotPosition): BotPosition {
     return {
       ...bot,
       direction: this.turnChangesMap[bot.direction],
@@ -51,8 +51,8 @@ export class TurnRight extends Turn {
 }
 
 abstract class TurnSwitch extends Turn {
-  move(bot: BotPosition): BotPosition {
-    const nextBot = super.move(bot);
+  exec(bot: BotPosition): BotPosition {
+    const nextBot = super.exec(bot);
     this.switch();
     return nextBot;
   }

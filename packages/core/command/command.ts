@@ -6,5 +6,5 @@ const id = () => _id++;
 export abstract class Command {
   id = id();
   abstract name: string;
-  abstract move(bot: BotPosition): BotPosition;
+  abstract exec(bot: BotPosition): BotPosition;
 }

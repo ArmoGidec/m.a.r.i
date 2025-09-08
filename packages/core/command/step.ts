@@ -33,7 +33,7 @@ const makeStep = (dir: Direction, pos: Position, amount: number): Position => {
 export class Step extends Command {
   name = 'step';
   
-  move({ direction, position }: BotPosition): BotPosition {
+  exec({ direction, position }: BotPosition): BotPosition {
     return {
       direction,
       position: makeStep(direction, position, 1),
@@ -44,7 +44,7 @@ export class Step extends Command {
 export class DoubleStep extends Command {
   name = 'doubleStep';
 
-  move({ direction, position }: BotPosition): BotPosition {
+  exec({ direction, position }: BotPosition): BotPosition {
     return {
       direction,
       position: makeStep(direction, position, 2),
